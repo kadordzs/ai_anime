@@ -14,24 +14,74 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         body {
             font-family: 'Almarai', sans-serif;
-            background-color: #111827; /* bg-gray-900 */
-            color: #d1d5db; /* text-gray-300 */
+            background-color: #0d1117; 
+            color: #d1d5db;
         }
+
+        .animated-gradient-bg {
+            background: linear-gradient(-45deg, #0d1117, #1f2937, #111827, #3730a3);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+        }
+
         .cinzel {
             font-family: 'Cinzel', serif;
         }
-        .card-bg {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .cinzel-decorative {
+            font-family: 'Cinzel Decorative', cursive;
         }
+
+        .gradient-text {
+            background-image: linear-gradient(to right, #a78bfa, #818cf8, #d1d5db);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .card-bg {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            transform: translateZ(0); /* Promotes the element to a new layer for better performance */
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        
+        .card-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 1rem;
+            padding: 2px;
+            background: linear-gradient(45deg, #4f46e5, #a78bfa, #4f46e5);
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.3;
+            transition: opacity 0.4s ease;
+        }
+        
+        .card-bg:hover::before {
+            opacity: 1;
+        }
+
         .card-bg:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 40px rgba(129, 140, 248, 0.4);
         }
+        
         .glass-bg {
             background: rgba(17, 24, 39, 0.8);
             backdrop-filter: blur(10px);
@@ -59,15 +109,15 @@
         }
     </style>
 </head>
-<body class="antialiased">
+<body class="antialiased animated-gradient-bg">
 
     <div id="app-container">
         <!-- ======================================================= -->
         <!--                  PAGE 1: WORLD SELECTION                -->
         <!-- ======================================================= -->
         <section id="page-world-selection" class="min-h-screen flex flex-col items-center justify-center p-6 text-center" dir="ltr">
-            <h1 class="text-5xl md:text-7xl font-bold cinzel text-white mb-4">Choose Your World</h1>
-            <p class="text-2xl md:text-3xl text-indigo-300 mb-12 cinzel">And Forge Your Destiny</p>
+            <h1 class="text-6xl md:text-8xl font-bold cinzel-decorative gradient-text mb-4 tracking-wider">Choose Your World</h1>
+            <p class="text-2xl md:text-3xl text-indigo-300 mb-16 cinzel">And Forge Your Destiny</p>
             
             <!-- Loading Indicator -->
             <div id="worlds-loading" class="text-center">
@@ -75,7 +125,7 @@
                 <p class="mt-4 text-lg text-gray-400">Loading Worlds...</p>
             </div>
             
-            <div id="world-list" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-screen-xl">
+            <div id="world-list" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-screen-xl">
                 <!-- World cards will be dynamically inserted here -->
             </div>
         </section>
@@ -83,7 +133,7 @@
         <!-- ======================================================= -->
         <!--               PAGE 2: CHARACTER CREATION              -->
         <!-- ======================================================= -->
-        <section id="page-character-creation" class="hidden min-h-screen flex items-center justify-center p-6">
+        <section id="page-character-creation" class="hidden min-h-screen flex items-center justify-center p-6 animated-gradient-bg">
             <div class="glass-bg rounded-2xl p-8 w-full max-w-4xl shadow-2xl">
                 <h2 id="creation-title" class="text-3xl font-bold text-center text-white mb-6 cinzel">صناعة الشخصية: عالم ...</h2>
                 <div id="character-form-step-1">
@@ -116,7 +166,7 @@
         <!-- ======================================================= -->
         <!--                  PAGE 3: SIMULATION                     -->
         <!-- ======================================================= -->
-        <section id="page-simulation" class="hidden h-screen w-screen p-2 sm:p-4 lg:p-6">
+        <section id="page-simulation" class="hidden h-screen w-screen p-2 sm:p-4 lg:p-6 animated-gradient-bg">
             <div class="grid grid-cols-12 gap-4 h-full">
 
                 <!-- Left Sidebar: Character Sheet -->
@@ -295,23 +345,24 @@
 
                 let cardsHTML = this.worlds.map(world => `
                     <div class="relative rounded-2xl overflow-hidden shadow-2xl cursor-pointer aspect-video card-bg" onclick="app.selectWorld('${world.id}')">
-                        <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover -z-10">
+                        <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover -z-10 brightness-50 group-hover:brightness-75 transition-all duration-300">
                             <source src="${world.video}" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                        <div class="absolute bottom-0 p-4 w-full text-left">
-                            <h3 class="text-2xl font-bold text-white cinzel">${world.name}</h3>
-                            <p class="text-sm text-gray-300">Difficulty: ${world.difficulty}</p>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                        <div class="absolute bottom-0 p-5 w-full text-left">
+                            <h3 class="text-3xl font-bold text-white cinzel-decorative">${world.name}</h3>
+                            <p class="text-sm text-indigo-200 uppercase tracking-widest">Difficulty: ${world.difficulty}</p>
                         </div>
                     </div>
                 `).join('');
 
                 // Add the custom world card
                 cardsHTML += `
-                    <div class="relative rounded-2xl overflow-hidden shadow-2xl cursor-pointer aspect-video card-bg flex items-center justify-center bg-gray-800/80 border-2 border-dashed border-gray-600" onclick="app.promptCustomWorld()">
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl cursor-pointer aspect-video card-bg flex items-center justify-center bg-gray-800/80 group" onclick="app.promptCustomWorld()">
+                         <div class="absolute inset-0 border-2 border-dashed border-gray-600 rounded-2xl group-hover:border-indigo-400 transition-colors duration-300"></div>
                         <div class="text-center p-4">
-                            <i data-lucide="plus-circle" class="w-16 h-16 text-gray-500 mx-auto"></i>
+                            <i data-lucide="plus-circle" class="w-16 h-16 text-gray-500 mx-auto group-hover:text-indigo-400 transition-colors duration-300"></i>
                             <h3 class="text-2xl font-bold text-white cinzel mt-2">Custom World</h3>
                             <p class="text-sm text-gray-400">Enter your own</p>
                         </div>
